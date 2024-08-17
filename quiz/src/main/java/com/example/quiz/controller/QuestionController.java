@@ -3,7 +3,7 @@ package com.example.quiz.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+// import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.quiz.dto.OptionDTO;
 import com.example.quiz.dto.QuestionDTO;
 import com.example.quiz.exception.ResourceNotFoundException;
+import com.example.quiz.response.ResponseHandler;
 import com.example.quiz.service.QuestionService;
 
 @RestController
@@ -31,12 +32,10 @@ public class QuestionController {
 
     @GetMapping("/cat/{cat}")
     public ResponseEntity<?> getQuestionsByCategory(@PathVariable String cat) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(cat, cat);
         try {
             return new ResponseEntity<>(questionService.getQuestionsByCategory(cat), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -45,7 +44,7 @@ public class QuestionController {
         try {
             return new ResponseEntity<>(questionService.getQuestionsByDefficulty(diff), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -54,7 +53,7 @@ public class QuestionController {
         try {
             return new ResponseEntity<>(questionService.getQuestionsByCategoryAndDefficultyLevel(cat, diff), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -63,16 +62,16 @@ public class QuestionController {
         try {
             return new ResponseEntity<>(questionService.getQuestionAnswer(id), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping("/checkAns")
     public ResponseEntity<?> checkCorrectOption(@RequestBody OptionDTO optionDTO) {
         try {
-            return new ResponseEntity<>(questionService.checkCorrectOption(optionDTO), HttpStatus.OK);
+            return questionService.checkCorrectOption(optionDTO);
         } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

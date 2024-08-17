@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.quiz.dto.AnswerDTO;
@@ -13,6 +15,7 @@ import com.example.quiz.dto.QuestionDTO;
 import com.example.quiz.exception.ResourceNotFoundException;
 import com.example.quiz.model.Question;
 import com.example.quiz.repository.QuestionRepository;
+import com.example.quiz.response.ResponseHandler;
 
 @Service
 public class QuestionService {
@@ -78,16 +81,16 @@ public class QuestionService {
         throw new ResourceNotFoundException("Question is not found for Id: " + id);
     }
 
-    public String checkCorrectOption(OptionDTO optionDTO) throws ResourceNotFoundException{
+    public ResponseEntity<?> checkCorrectOption(OptionDTO optionDTO) throws ResourceNotFoundException{
         Optional<Question> data = questionRepository.findById(optionDTO.getId());
 
         if (data.isPresent()) {
             Question question = data.get();
 
             if (optionDTO.getSelectedOption().equals(question.getAnswer())) {
-                return "Your selected correct option";
+                return ResponseHandler.responseBuilder("You selected right option", HttpStatus.OK);
             } 
-            return "You selected wrong option";
+            return ResponseHandler.responseBuilder("You selected wrong option", HttpStatus.OK);
         } else {
             throw new ResourceNotFoundException("Question not found for Id: " + optionDTO.getId());
         }
